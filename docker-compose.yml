@@ -1,0 +1,126 @@
+services:
+  db-users:
+    image: postgres:14.3
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_USERS_PASSWORD}
+      POSTGRES_DB: ${DB_USERS_NAME}
+    ports:
+      - "${USERS_DB_PORT}:5432"
+    volumes:
+      - ./postgres-users:/var/lib/postgresql/data
+    env_file:
+      - ./.env
+    networks:
+      - artemisa-network
+
+  db-vet:
+    image: postgres:14.3
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_VET_PASSWORD}
+      POSTGRES_DB: ${DB_VET_NAME}
+    ports:
+      - "${VET_DB_PORT}:5432"
+    volumes:
+      - ./postgres-vet:/var/lib/postgresql/data
+    env_file:
+      - ./.env
+    networks:
+      - artemisa-network
+
+  db-ecommerce:
+    image: postgres:14.3
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_ECOMMERCE_PASSWORD}
+      POSTGRES_DB: ${DB_ECOMMERCE_NAME}
+    ports:
+      - "${ECOMMERCE_DB_PORT}:5432"
+    volumes:
+      - ./postgres-ecommerce:/var/lib/postgresql/data
+    env_file:
+      - ./.env
+    networks:
+      - artemisa-network
+
+  users-service:
+    build:
+      context: ./artemisa-users-api
+    container_name: artemisa-users-api
+    ports:
+      - "3001:3001"
+    environment:
+      DB_HOST: db-users
+      DB_PORT: 5432
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_USERS_PASSWORD}
+      DB_NAME: ${DB_USERS_NAME}
+    depends_on:
+      - db-users
+    env_file:
+      - ./.env
+    volumes:
+      - ./artemisa-users-api:/app
+      - /app/node_modules
+    networks:
+      - artemisa-network
+
+  vet-managment-bc:
+    build:
+      context: ./vet-managment-bc
+    container_name: vet-managment-bc
+    ports:
+      - "3002:3002"
+    environment:
+      DB_HOST: db-vet
+      DB_PORT: 5432
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_VET_PASSWORD}
+      DB_NAME: ${DB_VET_NAME}
+    depends_on:
+      - db-vet
+    env_file:
+      - ./.env
+    volumes:
+      - ./vet-managment-bc:/app
+      - /app/node_modules
+    networks:
+      - artemisa-network
+
+  ecommerce-service:
+    build:
+      context: ./artemisa-e-commerce-bc
+    container_name: artemisa-e-commerce-bc
+    ports:
+      - "8080:8080" 
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db-ecommerce:5432/${DB_ECOMMERCE_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_ECOMMERCE_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      - db-ecommerce
+    env_file:
+      - ./.env
+    networks:
+      - artemisa-network
+    
+  artemisa-frontend:
+    build:
+      context: ./artemisa-fr
+    container_name: artemisa-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./artemisa-fr:/app
+      - /app/node_modules
+    networks:
+      - artemisa-network
+
+networks:
+  artemisa-network:
+    driver: bridge

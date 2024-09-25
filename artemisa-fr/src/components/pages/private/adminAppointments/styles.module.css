@@ -1,0 +1,67 @@
+.filterForm {
+    display: flex;
+    gap: 1.5rem;
+    padding: 0 2rem;  
+}
+
+.tableContainer {
+    display: flex;
+    width: 100%;
+    height: 70%;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem 0;
+}
+
+.singleAppointmentContainer {
+    width: 60%;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+    border-radius: 8px;
+    margin: 1rem auto;
+    gap: 1rem;
+    max-width: 500px;
+    justify-content: center;
+    align-items: center;
+    background-color: white;
+}
+
+.gridContainer {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem; 
+    width: 100%;
+  }
+  
+  .infoTag {
+    font-weight: bold;
+  }
+
+.historyFormGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem; 
+  width: 100%;
+  justify-items: center;
+  padding: 2rem;
+}
+  
+
+  @media (max-width: 768px) {
+    .gridContainer,
+    .historyFormGrid {
+      grid-template-columns: 1fr; 
+    }
+  }
+
+
+
+  .flexColumn {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  

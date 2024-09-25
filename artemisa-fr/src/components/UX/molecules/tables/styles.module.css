@@ -1,0 +1,8 @@
+.tableRow {
+    cursor: pointer;
+
+}
+
+.tableRow:hover {
+    background-color: #3D5A80;
+}
